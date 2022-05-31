@@ -13,7 +13,7 @@ const Drawer = createDrawerNavigator();
 import AllNotes from './components/AllNotes';
 import AddNote from './components/AddNote';
 import EditNote from './components/EditNote';
-import AddCateg from './components/AddCateg';
+import AddCateg from './components/AddCategory';
 
 function App() {
     const styles = StyleSheet.create({
@@ -49,6 +49,11 @@ function App() {
                     icon={() => <Image style={styles.smallImg} source={require("./assets/emptyPlus.png")} />}
                     onPress={() => props.navigation.navigate("dodaj kategorię")}
                 />
+                {/*<DrawerItem*/}
+                {/*    label="label"*/}
+                {/*    icon={() => <Image />}*/}
+                {/*    onPress={() => props.navigation.navigate("edytuj notatkę")}*/}
+                {/*/>*/}
                 <DrawerItem
                     label="info"
                     icon={() => <Image style={styles.smallImg} source={require("./assets/information.png")}></Image>}

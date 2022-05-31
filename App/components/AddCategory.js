@@ -1,23 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import {Note} from "../Note";
 
-const addAlert = (title, content, clearIfOk) => Alert.alert(
-    "Czy chcesz dodać notatkę?",
-    `Tytuł: ${title}, treść: ${content}`,
-    [
-        {
-            text: "Anuluj",
-            onPress: () => console.log("Cancelled"),
-            style: "cancel"
-        },
-        {
-            text: "OK", onPress: () => {
-                Note.createAndSave(title, content).then(() => console.log("Created Item"))
-                clearIfOk()
-            }
-        }
-    ]
-)
+
 
 const styles = StyleSheet.create({
     input: {
@@ -35,7 +20,7 @@ const styles = StyleSheet.create({
         alignContent: "center"
     }
 })
-export default class AddCateg extends Component {
+export default class AddCategory extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -49,14 +34,19 @@ export default class AddCateg extends Component {
                     style={styles.input}
                     defaultValue="KATEGORIA..."
                     underlineColorAndroid="gray"
-                    value={this.state.categInputVal}
-                    onChangeText={(text) => this.setState({ categInputVal: text })}
+                    value={this.state.categoryInputVal}
+                    onChangeText={(text) => this.setState({ categoryInputVal: text })}
                     multiline={true} />
                 <TouchableOpacity style={styles.center} onPress={() => {
-                    const newCateg = this.state.categInputVal
-                    if (newCateg.length < 3) {
+                    const newCategory = this.state.categoryInputVal
+                    if (newCategory.length < 3) {
                         Alert.alert("Błąd:", "Minimum 3 znaki")
                     }
+                    else{
+                        Note.createAndSaveCategory(this.state.categoryInputVal).then(() => console.log("Created Item"))
+                        this.setState({categoryInputValue:""})
+                    }
+
                 }}>
                     <Text style={styles.button}>DODAJ</Text>
                 </TouchableOpacity>

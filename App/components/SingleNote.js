@@ -50,11 +50,21 @@ const SingleNote = (props) => {
         content:{
             color:'white',
             fontSize:17,
+        },
+        cat:{
+            backgroundColor:'#303030',
+            color:'white',
+            fontSize:17,
+            padding:3,
+            borderRadius:10
         }
     })
-    console.log(props)
     return (
-        <TouchableOpacity style={styles.view} onPress={()=>{if(props.data.key!==-1)addAlert(props.data.key, props.data.title, props.refresh)}}>
+        <TouchableOpacity style={styles.view}
+                          onLongPress={()=>{if(props.data.key!==-1)addAlert(props.data.key, props.data.title, props.refresh)}}
+                          onPress={()=>{props.navigation.navigate("edytuj notatkę", {data:props.data})}}
+        >
+            <Text style={styles.cat}>{props.data.cat}</Text>
             <Text style={styles.date}>{date.getDay()+" "+monthTabPL[date.getMonth()].toUpperCase()}</Text>
             <Text style={styles.title}>{props.data.title}</Text>
             <Text style={styles.content}>{props.data.content}</Text>

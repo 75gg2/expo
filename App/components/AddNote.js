@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import {View, Text, TextInput, StyleSheet, Button, Alert} from 'react-native';
+import {View, Text, TextInput, StyleSheet, Button, Alert, Picker} from 'react-native';
 import {Note} from "../Note";
 import {TouchableOpacity} from "react-native";
+// import { Picker } from '@react-native-picker/picker';
 
-const addAlert = (title, content, clearIfOk) => Alert.alert(
+const addAlert = (title, content, cat, clearIfOk) => Alert.alert(
     "Czy chcesz dodać notatkę?",
     `Tytuł: ${title}, treść: ${content}`,
     [
@@ -14,7 +15,7 @@ const addAlert = (title, content, clearIfOk) => Alert.alert(
         },
         {
             text: "OK", onPress: () => {
-                Note.createAndSave(title, content).then(() => console.log("Created Item"))
+                Note.createAndSaveNote(title, content, cat).then(() => console.log("Created Item"))
                 clearIfOk()
             }
         }
@@ -29,11 +30,14 @@ const styles = StyleSheet.create({
     button: {
         color: "#000000",
         backgroundColor: "rgba(0,0,0,0)",
-        textAlign:"center",
-        fontSize:20
+        textAlign: "center",
+        fontSize: 20
     },
-    center:{
-        alignContent:"center"
+    center: {
+        alignContent: "center"
+    },
+    picker: {
+        margin: 20
     }
 })
 
@@ -42,15 +46,40 @@ class AddNote extends Component {
         super(props);
         this.state = {
             props,
+            cat: "",
+            categories: [],
             titleInputValue: "",
             contentInputValue: ""
         };
     }
 
+    refresh = () => {
+        console.log("refreshed")
+        const data = Note.getAll("categories")
+        data.then((d) => {
+            // console.log(d)
+            let tab = d.map((c) => {
+                return <Picker.Item label={c.title} key={c.key} value={c.title}/>
+            })
+            this.setState({categories: tab})
+        })
+    }
+    componentDidMount = () => {
+        this.funkcja = this.props.navigation.addListener('focus', () => {
+            this.refresh()
+        });
+        this.refresh()
+    }
+
+    componentWillUnmount() {
+        this.funkcja();
+    }
+
     clearForm = () => {
         this.setState({
             titleInputValue: "",
-            contentInputValue: ""
+            contentInputValue: "",
+            cat: ""
         })
     }
 
@@ -71,10 +100,17 @@ class AddNote extends Component {
                            onChangeText={(text) => this.setState({contentInputValue: text})}
                            multiline={true}
                 />
+                <Picker
+                    style = {styles.picker}
+                    selectedValue={this.state.cat}
+                    onValueChange={(text) => this.setState({cat: text})}
+                >
+                    {this.state.categories}
+                </Picker>
                 <TouchableOpacity
                     style={styles.center}
                     onPress={() => {
-                        addAlert(this.state.titleInputValue, this.state.contentInputValue, this.clearForm)
+                        addAlert(this.state.titleInputValue, this.state.contentInputValue, this.state.cat, this.clearForm)
                     }}>
                     <Text
                         style={styles.button}>

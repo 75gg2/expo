@@ -3,8 +3,9 @@ import 'react-native-get-random-values'
 import {v4 as uuidv4} from 'uuid';
 
 export class Note {
-    constructor(title, content) {
+    constructor(title, content, cat) {
         this.title = title
+        this.cat = cat
         this.content = content
         this.date = Date.now()
         this.color = Note.randomColor()
@@ -24,19 +25,33 @@ export class Note {
         return
     }
 
-    static async createAndSave(title, content) {
-        const note = new Note(title, content)
-        await Note.saveItem(note.key, JSON.stringify(note))
-        let keysArr = JSON.parse(await Note.getItem("keys"));
-        if (keysArr == null || !Array.isArray(keysArr))
-            keysArr = []
-        keysArr.push(note.key)
-        await SecureStore.setItemAsync("keys", JSON.stringify(keysArr));
+    static async createAndSaveNote(title, content,cat) {
+        const note = new Note(title, content,cat)
+        await this.saveUsingKeysTab(note.key, JSON.stringify(note), "keys")
+    }
+
+    static async createAndSaveCategory(title) {
+        console.log(title)
+        const category = {
+            title: title,
+            key: uuidv4()
+        }
+        await this.saveUsingKeysTab(category.key, JSON.stringify(category), "categories")
     }
 
 
-    static async getAll() {
-        const keys = JSON.parse(await this.getItem("keys"))
+    static async saveUsingKeysTab(key, value, keyOfKeysTab){
+        await Note.saveItem(key, value)
+        let keysArr = JSON.parse(await Note.getItem(keyOfKeysTab));
+        if (keysArr == null || !Array.isArray(keysArr))
+            keysArr = []
+        keysArr.push(key)
+        await SecureStore.setItemAsync(keyOfKeysTab, JSON.stringify(keysArr));
+    }
+
+
+    static async getAll(keyOfTab) {
+        const keys = JSON.parse(await this.getItem(keyOfTab))
 
         if (keys == null)
             return []
