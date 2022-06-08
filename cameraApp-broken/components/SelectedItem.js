@@ -53,7 +53,7 @@ export default class SelectedItem extends React.Component {
                         onPress={async () => {
                             let res = await MediaLibrary.deleteAssetsAsync([this.props.route.params.data.id]);
                             console.log(res)
-                            // this.props.route.params.refresh()
+                            this.props.route.params.refresh()
                             this.props.navigation.goBack();
                         }}
                         style={this.styles.buttonTouchable}>

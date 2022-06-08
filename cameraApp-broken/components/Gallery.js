@@ -6,7 +6,6 @@ import FotoItem from "./FotoItem";
 export default class Gallery extends React.Component {
     constructor(props) {
         super(props)
-        props.navigation.addListener("focus",()=>this.refresh())
         this.state = {
             padding: 10,
             photos: [],
@@ -36,6 +35,10 @@ export default class Gallery extends React.Component {
     async componentDidMount() {
         await this.refresh()
         this.renderGrid()
+    }
+
+    async componentWillUnmount() {
+        await this.refresh()
     }
 
     renderGrid() {

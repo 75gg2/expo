@@ -1,12 +1,12 @@
 import React from "react";
-import {Button, Dimensions, FlatList, View} from "react-native";
+import {Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as MediaLibrary from "expo-media-library";
 import FotoItem from "./FotoItem";
 
 export default class Gallery extends React.Component {
     constructor(props) {
         super(props)
-        props.navigation.addListener("focus",()=>this.refresh())
+        props.navigation.addListener("focus", () => this.refresh())
         this.state = {
             padding: 10,
             photos: [],
@@ -14,6 +14,7 @@ export default class Gallery extends React.Component {
             itemWidth: 100,
             itemHeight: 100,
             isList: false,
+            selected: []
         }
     }
 
@@ -30,7 +31,7 @@ export default class Gallery extends React.Component {
             first: 100,
             mediaType: 'photo'
         })
-        this.setState({photos: obj})
+        this.setState({ selected: [],photos: obj})
     }
 
     async componentDidMount() {
@@ -67,18 +68,59 @@ export default class Gallery extends React.Component {
         })
     }
 
+    selectOne = (id, selected) => {
+        const tab = this.state.selected
+        const index = tab.indexOf(id);
+        if (index !== -1) {
+            tab.splice(index, 1);
+        }
+        if (selected)
+            tab.push(id)
+        this.setState({
+            selected: tab
+        }, () => console.log(this.state.selected))
+
+    }
+
     render() {
         return (
             <View>
-                <Button
-                    onPress={() => {
-                        if (this.state.isList)
-                            this.renderGrid()
-                        else
-                            this.renderList()
-                    }}
-                    title="GRID/LIST"
-                />
+                <View style={styles.container}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            this.refresh()
+                            if (this.state.isList)
+                                this.renderGrid()
+                            else
+                                this.renderList()
+
+                        }}>
+                        <Text
+                            style={styles.buttons}>
+                            GRID/LIST
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => {
+                            this.props.navigation.navigate("camera")
+                        }}>
+                        <Text
+                            style={styles.buttons}>
+                            CAMERA
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={async () => {
+                            await MediaLibrary.deleteAssetsAsync(this.state.selected)
+                            this.refresh()
+                        }}>
+                        <Text
+                            style={styles.buttons}>
+                            REMOVE
+                        </Text>
+                    </TouchableOpacity>
+
+                </View>
                 <FlatList
                     numColumns={this.state.quantity}
                     key={this.state.quantity}
@@ -92,7 +134,7 @@ export default class Gallery extends React.Component {
                                 width: this.state.itemWidth,
                                 height: this.state.itemHeight
                             }}
-                            refresh={this.refresh}
+                            select={this.selectOne}
                             padding={this.state.padding}
                             navigation={this.props.navigation}
                         />}
@@ -102,3 +144,15 @@ export default class Gallery extends React.Component {
     }
 
 }
+
+const styles = StyleSheet.create({
+    container: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around"
+    },
+    buttons: {
+        padding: 10,
+        fontSize: 20,
+    }
+})

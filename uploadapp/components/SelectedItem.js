@@ -7,17 +7,18 @@ export default class SelectedItem extends React.Component {
     constructor(props) {
         // console.log(props)
         super(props)
+        console.log(this.props.route.params.data)
         this.state = {}
     }
 
     styles = StyleSheet.create({
             buttonText: {
-                textAlignVertical:"center",
-                height:50,
-                fontSize:30
+                textAlignVertical: "center",
+                height: 50,
+                fontSize: 30
             },
             buttonTouchable: {
-                height:50,
+                height: 50,
             },
             buttonContainer: {
                 width: Dimensions.get("window").width - 20,
@@ -58,6 +59,22 @@ export default class SelectedItem extends React.Component {
                         }}
                         style={this.styles.buttonTouchable}>
                         <Text style={this.styles.buttonText}>DELETE</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => {
+                            const data = new FormData();
+                            data.append('photo', {
+                                uri: this.props.route.params.data.uri,
+                                type: 'image/jpeg',
+                                name: this.props.route.params.data.filename
+                            });
+                            fetch("http://192.168.1.11:3000/upload", {
+                                method: 'POST',
+                                body: data
+                            })
+                        }}
+                        style={this.styles.buttonTouchable}>
+                        <Text style={this.styles.buttonText}>UPLOAD</Text>
                     </TouchableOpacity>
 
                 </View>

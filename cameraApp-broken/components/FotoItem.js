@@ -9,7 +9,7 @@ export default class FotoItem extends React.Component {
     render() {
         return (
             <TouchableOpacity
-                onPress={() => this.props.navigation.navigate("clicked", {data: this.props.data})}
+                onPress={() => this.props.navigation.navigate("clicked", {data: this.props.data, refresh:this.props.refresh})}
                 style={{
                     padding: this.props.padding,
                 }}>
